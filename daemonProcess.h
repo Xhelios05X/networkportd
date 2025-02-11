@@ -1,10 +1,16 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/stat.h>
+
 #ifndef DAEMON_PROCESS_H
-#   define DAEMON_PROCESS_H
+#define DAEMON_PROCESS_H
 
 struct daemonProcess{
     int processPid;
     int sid;
-    int error;
-} daemonProcess;
+};
+
+struct daemonProcess daemonInit();
 
 #endif

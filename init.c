@@ -1,9 +1,6 @@
 /*
  * daemon initializing file 
  */
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include "daemonProcess.h"
 
 struct daemonProcess daemonInit(){
@@ -22,8 +19,8 @@ struct daemonProcess daemonInit(){
          * have to kill it
          */
         
-        printf("it's parent process\n child process: %d\n", process.processPid);
-        printf("parent process exiting with status 0");
+        printf("it's parent process\nchild process: %d\n", process.processPid);
+        printf("parent process exiting with status 0\n");
         exit(0);
 
     }
@@ -39,10 +36,9 @@ struct daemonProcess daemonInit(){
             fprintf(stderr, "error number 2: sid error");
             exit(2);
         }
+        
+        umask(0);
 
-        process.error = 0;
         return process;
     }
-    process.error = 1;
-    return process;
 }
