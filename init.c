@@ -50,6 +50,25 @@ struct daemonProcess daemonInit(){
             exit(2);
         }
 
+        /*  closing all open descriptors */
+        if(resource_limit.rlim_max == RLIM_INFINITY){
+            resource_limit.rlim_max = 1024;
+        }
+        for(int i = 0; i < resource_limit.rlim_max; i++){
+            close(i);
+        }
+
+        /* descriptors 0,1,2 to /dev/null */
+        int fd = open("/dev/null", O_RDWR);
+        if(fd < 0)
+            exit(EXIT_FAILURE);
+        if(dup2(0, fd) < 0 || dup2(1, fd) < 0 || dup2(2, fd) < 0)
+            exit(EXIT_FAILURE);
+        
+        close(fd);
+
         return process;
     }
+
+    exit(EXIT_FAILURE);
 }

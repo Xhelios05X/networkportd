@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/resource.h>
+#include <fcntl.h>
 
 #ifndef DAEMON_PROCESS_H
 #define DAEMON_PROCESS_H
