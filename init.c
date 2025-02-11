@@ -1,10 +1,23 @@
 /*
- * daemon initializing file 
+ *  daemon initializing file 
  */
 #include "daemonProcess.h"
 
+/*
+ *   change exit errors
+ */
+
 struct daemonProcess daemonInit(){
-    struct daemonProcess process;
+    deamon process;
+
+    struct rlimit resource_limit;
+
+    umask(0);
+
+    /*   get maximum descriptors*/
+    if(getrlimit(RLIMIT_NOFILE, &resource_limit) < 0){
+        exit(EXIT_FAILURE);
+    }
 
     process.processPid = fork();
 
@@ -36,8 +49,6 @@ struct daemonProcess daemonInit(){
             fprintf(stderr, "error number 2: sid error");
             exit(2);
         }
-        
-        umask(0);
 
         return process;
     }
