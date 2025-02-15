@@ -43,17 +43,17 @@ bool port_check(int port_number){
 }
 
 int main(int argc, char *argv[]){
-    /* initalizing a daemon process */
-    //struct daemonProcess process = daemonInit();
+    /*  initalizing a daemon process */
+    struct daemonProcess process = daemonInit();
     
-    //printf("child process has now his own group %d\n", process.sid);
+    printf("child process has now his own group %d\n", process.sid);
 
     for(int port_number = 1; port_number < nports; port_number++){
         if(port_check(port_number)){
-            //printf("%d port free\n", port_number);
+            /*  port is free */
         }
         else{
-            printf("%d port is used\n", port_number);
+            /*  port is used */
         }
     }
 
