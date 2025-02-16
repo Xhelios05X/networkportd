@@ -13,9 +13,12 @@
 const int nports = NPORTS;
 
 bool* new_map(){
-    bool *ports_map = (bool*)calloc(nports, sizeof(bool));
+    bool *ports_map = (bool*)malloc(nports * sizeof(bool));
     if(ports_map == NULL){
         exit(EXIT_FAILURE);
+    }
+    for(int i = 0; i < nports; i++){
+        *(ports_map + i) = false;
     }
 
     return ports_map;
