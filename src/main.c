@@ -1,14 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <errno.h>
 #include <stdbool.h>
 #include "daemonProcess.h"
-
-#ifndef NPORTS
-#define NPORTS 65535
-#endif
+#include "portsTable.h"
 
 const int nports = NPORTS;
 
