@@ -1,10 +1,10 @@
-CFLAGS = -Wall -c
+CFLAGS = -Wall -c -Iinclude
 
-all: main.o init.o
-	gcc init.o main.o -lc -o out.o
+all: build/main.o build/init.o
+	gcc build/init.o build/main.o -lc -o out.o
 
-main.o: main.c daemonProcess.h
-	gcc $(CFLAGS) main.c -o main.o
+buld/main.o: src/main.c include/daemonProcess.h
+	gcc $(CFLAGS) src/main.c -o build/main.o
 
-init.o: init.c daemonProcess.h
-	gcc $(CFLAGS) init.c -o init.o
+build/init.o: src/init.c include/daemonProcess.h
+	gcc $(CFLAGS) src/init.c -o build/init.o
