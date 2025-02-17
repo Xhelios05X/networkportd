@@ -1,3 +1,3 @@
 #ignore all .out files
-/build
+build/*.o
 *.o

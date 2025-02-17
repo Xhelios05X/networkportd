@@ -10,4 +10,4 @@ build/init.o: src/init.c include/daemonProcess.h
 	gcc $(CFLAGS) src/init.c -o build/init.o
 
 build/portsTable.o: src/portsTable.c include/portsTable.h
-	gcc $(CFLAGS) src/portsTable.c -o build/portsTable.h
+	gcc $(CFLAGS) src/portsTable.c -o build/portsTable.o
