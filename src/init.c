@@ -3,11 +3,10 @@
  */
 #include "daemonProcess.h"
 
-struct daemonProcess daemonInit(){
-    deamon process;
-
+daemon_ids daemonInit(void){
+    daemon_ids process;
     struct rlimit resource_limit;
-    openlog("ports_daemon", LOG_PID, LOG_DAEMON);
+    openlog("portsDaemon", LOG_PID, LOG_DAEMON);
 
     umask(0);
 
@@ -17,36 +16,40 @@ struct daemonProcess daemonInit(){
         exit(EXIT_FAILURE);
     }
 
-    process.processPid = fork();
-
-    if(process.processPid <= -1){
+    int pid = fork();
+    if(pid <= -1){
         /* fork error */
         syslog(LOG_ERR, "fork error");
         exit(EXIT_FAILURE);
     }
-    else if(process.processPid > 0){
+    else if(pid > 0){
         /*
          * parent process
          * have to kill it
          */
         
-        printf("it's parent process\nchild process: %d\n", process.processPid);
+        printf("it's parent process\nchild process: %d\n", pid);
         printf("parent process exiting with status 0\n");
         exit(EXIT_SUCCESS);
 
     }
-    else if(process.processPid == 0){
+    else if(pid == 0){
         /*
          * child process
          * it going to be a daemon process
          */
+        if(chdir("/") < 0){
+            syslog(LOG_ERR, "chdir error");
+            exit(EXIT_FAILURE);
+        }
         
-        process.sid = setsid();
-        if(process.sid < 0){
+        int sid = setsid();
+        if(sid < 0){
             /* setsid error */
             syslog(LOG_ERR, "sid error");
             exit(EXIT_FAILURE);
         }
+        syslog(LOG_INFO, "i have sid");
 
         /*  closing all open descriptors */
         if(resource_limit.rlim_max == RLIM_INFINITY){
@@ -55,6 +58,8 @@ struct daemonProcess daemonInit(){
         for(int i = 0; i < resource_limit.rlim_max; i++){
             close(i);
         }
+        syslog(LOG_INFO, "my descriptors are closed");
+
 
         /* descriptors 0,1,2 to /dev/null */
         int fd = open("/dev/null", O_RDWR);
@@ -62,15 +67,13 @@ struct daemonProcess daemonInit(){
             syslog(LOG_ERR, "can't open /dev/null");
             exit(EXIT_FAILURE);
         }
-        if(dup2(0, fd) < 0 || dup2(1, fd) < 0 || dup2(2, fd) < 0){
+        if(dup2(fd, STDERR_FILENO) < 0 || dup2(fd, STDIN_FILENO) < 0 || dup2(fd, STDOUT_FILENO) < 0){
             syslog(LOG_ERR, "can't duplcate /dev/null descriptor");
             exit(EXIT_FAILURE);
         }
-        
-        close(fd);
 
-        return process;
+       process.processPid = getpid();
+       process.sid = sid;
+       return process;
     }
-
-    exit(EXIT_FAILURE);
 }

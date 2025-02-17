@@ -10,11 +10,12 @@
  *  false -> port closed  
  */
 
-const int nports = NPORTS;
-
 bool* new_map(void){
+    const int nports = 65535;
+
     bool *ports_map = (bool*)malloc(nports * sizeof(bool));
     if(ports_map == NULL){
+        syslog(LOG_ERR, "malloc error");
         exit(EXIT_FAILURE);
     }
     for(int i = 0; i < nports; i++){

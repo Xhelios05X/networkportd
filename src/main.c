@@ -4,11 +4,11 @@
 #include "daemonProcess.h"
 #include "portsTable.h"
 
-const int nports = NPORTS;
+const int nports = 65535;
+const __useconds_t refresh_time = 1 * 100000;
 
 // To Do list
 // - writing outputs to log file
-// - header file with port acvivity structure
 // - setting dynamic cheking of ports
 
 bool port_check(int port_number){
@@ -40,14 +40,23 @@ bool port_check(int port_number){
 
 int main(int argc, char *argv[]){
     /*  initalizing a daemon process */
-    struct daemonProcess process = daemonInit();
+    daemon_ids process = daemonInit();
+    syslog(LOG_INFO, "i'm alive with pid %d", process.processPid);
 
-    for(int port_number = 1; port_number < nports; port_number++){
-        if(port_check(port_number)){
-            /*  port is free */
-        }
-        else{
-            /*  port is used */
+    bool *ports_map = new_map();
+    int port_number = 0;
+
+    while(1){
+        for(port_number = 1; port_number < nports; port_number++){
+            if(port_check(port_number)){
+                /*  port is free */
+                change_port_state(&ports_map, port_number, true);
+            }
+            else{
+                /*  port is used */
+                change_port_state(&ports_map, port_number, false);
+            }
+            usleep(refresh_time);
         }
     }
 

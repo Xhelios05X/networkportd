@@ -12,8 +12,8 @@
 typedef struct daemonProcess{
     int processPid;
     int sid;
-} deamon;
+} daemon_ids;
 
-struct daemonProcess daemonInit();
+daemon_ids daemonInit();
 
 #endif
