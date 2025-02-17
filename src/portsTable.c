@@ -12,7 +12,7 @@
 
 const int nports = NPORTS;
 
-bool* new_map(){
+bool* new_map(void){
     bool *ports_map = (bool*)malloc(nports * sizeof(bool));
     if(ports_map == NULL){
         exit(EXIT_FAILURE);
@@ -25,5 +25,5 @@ bool* new_map(){
 }
 
 void change_port_state(bool **map, int port_number, bool status){
-    *(*(map) + port_number -1) = status;
+    *(*(map) + port_number - 1) = status;
 }
