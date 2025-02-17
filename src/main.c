@@ -1,7 +1,6 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <errno.h>
-#include <stdbool.h>
 #include "daemonProcess.h"
 #include "portsTable.h"
 
@@ -15,6 +14,7 @@ const int nports = NPORTS;
 bool port_check(int port_number){
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     if(sock < 0){
+        syslog(LOG_ERR, "socket create error");
         exit(EXIT_FAILURE);
     }
 
@@ -29,6 +29,7 @@ bool port_check(int port_number){
             return false;
         }
         else{
+            syslog(LOG_ERR, "unrecognized bind error, errno: %d", errno);
             close(sock);
             exit(EXIT_FAILURE);
         }
@@ -40,8 +41,6 @@ bool port_check(int port_number){
 int main(int argc, char *argv[]){
     /*  initalizing a daemon process */
     struct daemonProcess process = daemonInit();
-    
-    printf("child process has now his own group %d\n", process.sid);
 
     for(int port_number = 1; port_number < nports; port_number++){
         if(port_check(port_number)){

@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <sys/resource.h>
 #include <fcntl.h>
+#include <syslog.h>
 
 #ifndef DAEMON_PROCESS_H
 #define DAEMON_PROCESS_H

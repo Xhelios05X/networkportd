@@ -3,19 +3,17 @@
  */
 #include "daemonProcess.h"
 
-/*
- *   change exit errors
- */
-
 struct daemonProcess daemonInit(){
     deamon process;
 
     struct rlimit resource_limit;
+    openlog("ports_daemon", LOG_PID, LOG_DAEMON);
 
     umask(0);
 
     /*   get maximum descriptors*/
     if(getrlimit(RLIMIT_NOFILE, &resource_limit) < 0){
+        syslog(LOG_ERR, "can't get maximum number of descriptors");
         exit(EXIT_FAILURE);
     }
 
@@ -23,8 +21,8 @@ struct daemonProcess daemonInit(){
 
     if(process.processPid <= -1){
         /* fork error */
-        fprintf(stderr, "error number 1: fork error");
-        exit(1);
+        syslog(LOG_ERR, "fork error");
+        exit(EXIT_FAILURE);
     }
     else if(process.processPid > 0){
         /*
@@ -34,7 +32,7 @@ struct daemonProcess daemonInit(){
         
         printf("it's parent process\nchild process: %d\n", process.processPid);
         printf("parent process exiting with status 0\n");
-        exit(0);
+        exit(EXIT_SUCCESS);
 
     }
     else if(process.processPid == 0){
@@ -46,8 +44,8 @@ struct daemonProcess daemonInit(){
         process.sid = setsid();
         if(process.sid < 0){
             /* setsid error */
-            fprintf(stderr, "error number 2: sid error");
-            exit(2);
+            syslog(LOG_ERR, "sid error");
+            exit(EXIT_FAILURE);
         }
 
         /*  closing all open descriptors */
@@ -60,10 +58,14 @@ struct daemonProcess daemonInit(){
 
         /* descriptors 0,1,2 to /dev/null */
         int fd = open("/dev/null", O_RDWR);
-        if(fd < 0)
+        if(fd < 0){
+            syslog(LOG_ERR, "can't open /dev/null");
             exit(EXIT_FAILURE);
-        if(dup2(0, fd) < 0 || dup2(1, fd) < 0 || dup2(2, fd) < 0)
+        }
+        if(dup2(0, fd) < 0 || dup2(1, fd) < 0 || dup2(2, fd) < 0){
+            syslog(LOG_ERR, "can't duplcate /dev/null descriptor");
             exit(EXIT_FAILURE);
+        }
         
         close(fd);
 
