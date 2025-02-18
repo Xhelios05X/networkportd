@@ -1,7 +1,10 @@
 CFLAGS = -Wall -c -Iinclude
 
-all: build/main.o build/init.o build/portsTable.o
+all: build build/main.o build/init.o build/portsTable.o
 	gcc build/portsTable.o build/init.o build/main.o -lc -o out.o
+
+build:
+	mkdir build
 
 build/main.o: src/main.c include/daemonProcess.h include/portsTable.h
 	gcc $(CFLAGS) src/main.c -o build/main.o
