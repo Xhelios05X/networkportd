@@ -8,7 +8,6 @@ const int nports = 65535;
 const __useconds_t refresh_time = 1 * 100000;
 
 // To Do list
-// - writing outputs to log file
 // - setting dynamic cheking of ports
 
 bool port_check(int port_number){
@@ -23,18 +22,17 @@ bool port_check(int port_number){
     addr.sin_addr.s_addr = INADDR_ANY;
     addr.sin_port = htons(port_number);
 
-    if(bind(sock, (struct sockaddr*)&addr, sizeof(addr)) < 0){
-        if(errno == EADDRINUSE){
-            close(sock);
-            return false;
-        }
-        else{
-            syslog(LOG_ERR, "unrecognized bind error, errno: %d", errno);
-            close(sock);
-            exit(EXIT_FAILURE);
-        }
-    }
+    errno = 0;
+    bind(sock, (struct sockaddr*)&addr, sizeof(addr));
     close(sock);
+    if(errno == EADDRINUSE){
+        return false;
+    }
+    else if(errno > 0 && errno != EADDRINUSE ){
+        syslog(LOG_ERR, "unrecognized bind error, errno: %d", errno);
+        exit(EXIT_FAILURE);
+    }
+    
     return true;
 }
 
@@ -55,6 +53,7 @@ int main(int argc, char *argv[]){
             else{
                 /*  port is used */
                 change_port_state(&ports_map, port_number, false);
+                syslog(LOG_WARNING, "port %d is now open", port_number);
             }
             usleep(refresh_time);
         }
