@@ -26,5 +26,6 @@ bool* new_map(void){
 }
 
 void change_port_state(bool **map, int port_number, bool status){
+    /* function chagnes port state */
     *(*(map) + port_number - 1) = status;
 }
