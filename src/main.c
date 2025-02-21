@@ -1,6 +1,3 @@
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <errno.h>
 #include "daemonProcess.h"
 #include "portsTable.h"
 
@@ -9,39 +6,6 @@ const __useconds_t refresh_time = 10000;
 
 // To Do list
 // - setting dynamic cheking of ports
-
-bool port_check(int port_number){
-    /*  function checks if port is open:
-     *  true - open
-     *  false - close
-     */
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    if(sock < 0){
-        syslog(LOG_ERR, "socket create error");
-        exit(EXIT_FAILURE);
-    }
-
-    struct sockaddr_in addr;
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = INADDR_ANY;
-    addr.sin_port = htons(port_number);
-
-    errno = 0;
-    bind(sock, (struct sockaddr*)&addr, sizeof(addr));
-    if(close(sock) < 0){
-        syslog(LOG_ERR, "close error");
-    }
-
-    if(errno == EADDRINUSE){
-        return true;
-    }
-    else if(errno > 0 && errno != EADDRINUSE ){
-        syslog(LOG_ERR, "unrecognized bind error, errno: %d", errno);
-        exit(EXIT_FAILURE);
-    }
-    
-    return false;
-}
 
 int main(int argc, char *argv[]){
     /*  initalizing a daemon process */
