@@ -7,6 +7,8 @@
 #ifndef PORTS_TABLE_H
 #define PORTS_TABLE_H
 
+typedef int nports_t; 
+
 bool* new_map(void);
 void change_port_state(bool**, int, bool);
 bool port_check(int);
